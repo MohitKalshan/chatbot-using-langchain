@@ -37,6 +37,22 @@ def connect(db_path: Path = DB_PATH) -> Iterator[sqlite3.Connection]:
         conn.close()
 
 
+def normalize_title(title: str) -> str:
+    """'  The  Matrix ' -> 'the matrix'"""
+    return " ".join(title.lower().split())
+
+
+def find_duplicate(conn: sqlite3.Connection, movie: MovieInfo) -> int | None:
+    """Return the id of an existing movie with the same title and year, or None."""
+    if not movie.title:
+        return None  # nothing to match on
+    row = conn.execute(
+        "SELECT id FROM movies WHERE lower(trim(title)) = ? AND release_year IS ?",
+        (normalize_title(movie.title), movie.release_year),
+    ).fetchone()
+    return row[0] if row else None
+
+
 def save_movie(conn: sqlite3.Connection, movie: MovieInfo, raw_text: str) -> int:
     """Insert a movie and return its new row id."""
     with conn:  # commits on success, rolls back on error

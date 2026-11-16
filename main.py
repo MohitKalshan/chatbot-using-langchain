@@ -6,7 +6,7 @@ sys.path.insert(0, "src")
 
 from project.cli import prompt_loop
 from project.config.settings import DB_PATH
-from project.database.db import connect, save_movie
+from project.database.db import connect, find_duplicate, save_movie
 from project.services.movie_extractor import extract_movie_info
 
 
@@ -24,6 +24,12 @@ def main() -> None:
                 continue
 
             print(movie.model_dump_json(indent=2))
+
+            existing_id = find_duplicate(conn, movie)
+            if existing_id:
+                print(f"Already saved with id {existing_id}, skipping duplicate")
+                continue
+
             movie_id = save_movie(conn, movie, paragraph)
             print(f"Saved with id {movie_id}")
 
