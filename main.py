@@ -8,6 +8,7 @@ from project.cli import prompt_loop
 from project.config.settings import DB_PATH
 from project.database.db import connect, find_duplicate, save_movie
 from project.services.movie_extractor import extract_movie_info
+from project.services.validation import INVALID_INPUT_MESSAGE, has_title, looks_like_query
 
 
 def main() -> None:
@@ -17,10 +18,18 @@ def main() -> None:
 
     with connect() as conn:
         for paragraph in prompt_loop("\nPaste a movie paragraph: "):
+            if looks_like_query(paragraph):
+                print(INVALID_INPUT_MESSAGE)
+                continue
+
             try:
                 movie = extract_movie_info(paragraph)
             except Exception as error:
                 print(f"Error: {error}")
+                continue
+
+            if not has_title(movie):
+                print(INVALID_INPUT_MESSAGE)
                 continue
 
             print(movie.model_dump_json(indent=2))

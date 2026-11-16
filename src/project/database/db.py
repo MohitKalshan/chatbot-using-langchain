@@ -37,6 +37,11 @@ def connect(db_path: Path = DB_PATH) -> Iterator[sqlite3.Connection]:
         conn.close()
 
 
+def get_summaries(conn: sqlite3.Connection) -> list[tuple[int, str | None, str]]:
+    """Return (id, title, summary) for every saved movie."""
+    return conn.execute("SELECT id, title, summary FROM movies ORDER BY id").fetchall()
+
+
 def normalize_title(title: str) -> str:
     """'  The  Matrix ' -> 'the matrix'"""
     return " ".join(title.lower().split())
