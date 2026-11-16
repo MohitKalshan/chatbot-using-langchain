@@ -14,14 +14,8 @@ dependencies = [
     "langchain-groq>=1.2.0",
     "langchain-huggingface>=1.2.3",
     "langchain-openai>=1.8.0",
+    "pydantic>=2.14.3",
     "python-dotenv>=1.2.4",
     "torch>=2.15.0",
     "transformers>=5.23.0",
 ]
-
-[project.scripts]
-project = "project:main"
-
-[build-system]
-requires = ["uv_build>=0.13.8,<0.14.0"]
-build-backend = "uv_build"
